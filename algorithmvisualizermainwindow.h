@@ -1,8 +1,13 @@
 
-#pragma once
+#ifndef ALGORITHMVISUALIZERMAINWINDOW_H
+#define ALGORITHMVISUALIZERMAINWINDOW_H
 
+#include "binarytreebase.h"
+
+#include <QLabel>
 #include <QMainWindow>
 #include <memory>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -19,6 +24,17 @@ public:
     AlgorithmVisualizerMainWindow(QWidget *parent = nullptr);
     ~AlgorithmVisualizerMainWindow();
 
+private slots:
+    void on_addValueButton_clicked();
+    void on_removeValueButton_clicked();
+
 private:
-    std::unique_ptr<Ui::AlgorithmVisualizerMainWindow> ui;
+    Ui::AlgorithmVisualizerMainWindow* ui;
+    std::unique_ptr<BinaryTreeBase<int>> binaryTree;
+    QVector<QLabel*> binaryTreeValueLabels;
+
+    void redrawBinaryTree();
+    void drawBinaryTreeNode(BinaryTreeBase<int>::node* node, const QPoint& Location);
 };
+
+#endif //ALGORITHMVISUALIZERMAINWINDOW_H
