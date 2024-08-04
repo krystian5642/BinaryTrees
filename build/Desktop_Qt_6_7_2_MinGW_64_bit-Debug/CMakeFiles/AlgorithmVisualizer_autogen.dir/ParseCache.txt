@@ -355,3 +355,5 @@ C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/algorithmvisualizermainwindo
 C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/algorithmvisualizermainwindow.cpp
  uic:./ui_algorithmvisualizermainwindow.h
 C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/main.cpp
+C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarytreebase.h
+C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarytreebase.cpp
