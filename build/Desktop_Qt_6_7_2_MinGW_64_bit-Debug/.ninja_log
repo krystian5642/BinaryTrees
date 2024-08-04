@@ -1,0 +1,17 @@
+# ninja log v6
+11	680	7445001615891029	AlgorithmVisualizer_autogen/timestamp	b7d237c2027168c5
+11	680	7445001615891029	AlgorithmVisualizer_autogen/mocs_compilation.cpp	b7d237c2027168c5
+11	680	7445001615891029	C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/AlgorithmVisualizer_autogen/timestamp	b7d237c2027168c5
+11	680	7445001615891029	C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/AlgorithmVisualizer_autogen/mocs_compilation.cpp	b7d237c2027168c5
+688	1771	7445001616781242	CMakeFiles/AlgorithmVisualizer.dir/AlgorithmVisualizer_autogen/mocs_compilation.cpp.obj	a4b8af53769e6271
+694	1776	7445001616831255	CMakeFiles/AlgorithmVisualizer.dir/main.cpp.obj	be9ac66edcb18342
+698	1873	7445001616881266	CMakeFiles/AlgorithmVisualizer.dir/algorithmvisualizermainwindow.cpp.obj	269ca83dd5596477
+1873	2058	7445001628629637	AlgorithmVisualizer.exe	2f5d9f8050c1f85d
+20	625	7445003016855783	AlgorithmVisualizer_autogen/timestamp	b7d237c2027168c5
+20	625	7445003016855783	AlgorithmVisualizer_autogen/mocs_compilation.cpp	b7d237c2027168c5
+20	625	7445003016855783	C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/AlgorithmVisualizer_autogen/timestamp	b7d237c2027168c5
+20	625	7445003016855783	C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/AlgorithmVisualizer_autogen/mocs_compilation.cpp	b7d237c2027168c5
+626	1704	7445003017655975	CMakeFiles/AlgorithmVisualizer.dir/AlgorithmVisualizer_autogen/mocs_compilation.cpp.obj	a4b8af53769e6271
+632	1735	7445003017715984	CMakeFiles/AlgorithmVisualizer.dir/main.cpp.obj	be9ac66edcb18342
+637	1789	7445003017765996	CMakeFiles/AlgorithmVisualizer.dir/algorithmvisualizermainwindow.cpp.obj	269ca83dd5596477
+1789	1977	7445003029284268	AlgorithmVisualizer.exe	2f5d9f8050c1f85d
