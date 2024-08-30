@@ -1,13 +1,13 @@
 #include "algorithmvisualizermainwindow.h"
 #include "./ui_algorithmvisualizermainwindow.h"
-#include "binarysearchtree.h"
+#include "balancedbinarytree.h"
 
 #include <QLabel>
 
 AlgorithmVisualizerMainWindow::AlgorithmVisualizerMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::AlgorithmVisualizerMainWindow())
-    , binaryTree(std::make_unique<BinarySearchTree<int>>())
+    , binaryTree(std::make_unique<BalancedBinaryTree<int>>())
 {
     ui->setupUi(this);
 }
