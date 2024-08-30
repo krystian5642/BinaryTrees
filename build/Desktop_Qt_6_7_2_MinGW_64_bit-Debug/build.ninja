@@ -73,22 +73,6 @@ build CMakeFiles/AlgorithmVisualizer.dir/algorithmvisualizermainwindow.cpp.obj: 
   OBJECT_DIR = CMakeFiles\AlgorithmVisualizer.dir
   OBJECT_FILE_DIR = CMakeFiles\AlgorithmVisualizer.dir
 
-build CMakeFiles/AlgorithmVisualizer.dir/binarytreebase.cpp.obj: CXX_COMPILER__AlgorithmVisualizer_unscanned_Debug C$:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarytreebase.cpp || cmake_object_order_depends_target_AlgorithmVisualizer
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
-  DEP_FILE = CMakeFiles\AlgorithmVisualizer.dir\binarytreebase.cpp.obj.d
-  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/AlgorithmVisualizer_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui
-  OBJECT_DIR = CMakeFiles\AlgorithmVisualizer.dir
-  OBJECT_FILE_DIR = CMakeFiles\AlgorithmVisualizer.dir
-
-build CMakeFiles/AlgorithmVisualizer.dir/binarysearchtree.cpp.obj: CXX_COMPILER__AlgorithmVisualizer_unscanned_Debug C$:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarysearchtree.cpp || cmake_object_order_depends_target_AlgorithmVisualizer
-  DEFINES = -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64
-  DEP_FILE = CMakeFiles\AlgorithmVisualizer.dir\binarysearchtree.cpp.obj.d
-  FLAGS = -DQT_QML_DEBUG -g -std=gnu++17 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/build/Desktop_Qt_6_7_2_MinGW_64_bit-Debug/AlgorithmVisualizer_autogen/include -isystem C:/Qt/6.7.2/mingw_64/include/QtCore -isystem C:/Qt/6.7.2/mingw_64/include -isystem C:/Qt/6.7.2/mingw_64/mkspecs/win32-g++ -isystem C:/Qt/6.7.2/mingw_64/include/QtWidgets -isystem C:/Qt/6.7.2/mingw_64/include/QtGui
-  OBJECT_DIR = CMakeFiles\AlgorithmVisualizer.dir
-  OBJECT_FILE_DIR = CMakeFiles\AlgorithmVisualizer.dir
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target AlgorithmVisualizer
@@ -97,7 +81,7 @@ build CMakeFiles/AlgorithmVisualizer.dir/binarysearchtree.cpp.obj: CXX_COMPILER_
 #############################################
 # Link the executable AlgorithmVisualizer.exe
 
-build AlgorithmVisualizer.exe: CXX_EXECUTABLE_LINKER__AlgorithmVisualizer_Debug CMakeFiles/AlgorithmVisualizer.dir/AlgorithmVisualizer_autogen/mocs_compilation.cpp.obj CMakeFiles/AlgorithmVisualizer.dir/main.cpp.obj CMakeFiles/AlgorithmVisualizer.dir/algorithmvisualizermainwindow.cpp.obj CMakeFiles/AlgorithmVisualizer.dir/binarytreebase.cpp.obj CMakeFiles/AlgorithmVisualizer.dir/binarysearchtree.cpp.obj | C$:/Qt/6.7.2/mingw_64/lib/libQt6Widgets.a C$:/Qt/6.7.2/mingw_64/lib/libQt6Gui.a C$:/Qt/6.7.2/mingw_64/lib/libQt6Core.a C$:/Qt/6.7.2/mingw_64/lib/libQt6EntryPoint.a || AlgorithmVisualizer_autogen AlgorithmVisualizer_autogen_timestamp_deps
+build AlgorithmVisualizer.exe: CXX_EXECUTABLE_LINKER__AlgorithmVisualizer_Debug CMakeFiles/AlgorithmVisualizer.dir/AlgorithmVisualizer_autogen/mocs_compilation.cpp.obj CMakeFiles/AlgorithmVisualizer.dir/main.cpp.obj CMakeFiles/AlgorithmVisualizer.dir/algorithmvisualizermainwindow.cpp.obj | C$:/Qt/6.7.2/mingw_64/lib/libQt6Widgets.a C$:/Qt/6.7.2/mingw_64/lib/libQt6Gui.a C$:/Qt/6.7.2/mingw_64/lib/libQt6Core.a C$:/Qt/6.7.2/mingw_64/lib/libQt6EntryPoint.a || AlgorithmVisualizer_autogen AlgorithmVisualizer_autogen_timestamp_deps
   FLAGS = -DQT_QML_DEBUG -g
   LINK_FLAGS = -mwindows
   LINK_LIBRARIES = C:/Qt/6.7.2/mingw_64/lib/libQt6Widgets.a  C:/Qt/6.7.2/mingw_64/lib/libQt6Gui.a  C:/Qt/6.7.2/mingw_64/lib/libQt6Core.a  -lmpr  -luserenv  -lmingw32  C:/Qt/6.7.2/mingw_64/lib/libQt6EntryPoint.a  -lshell32  -ld3d11  -ldxgi  -ldxguid  -ld3d12  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32

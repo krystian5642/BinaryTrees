@@ -263,6 +263,12 @@
 			null
 		],
 		[
+			"C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/balancedbinarytree.h",
+			"MU",
+			"EWIEGA46WW/moc_balancedbinarytree.cpp",
+			null
+		],
+		[
 			"C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarysearchtree.h",
 			"MU",
 			"EWIEGA46WW/moc_binarysearchtree.cpp",
@@ -348,16 +354,6 @@
 	[
 		[
 			"C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/algorithmvisualizermainwindow.cpp",
-			"MU",
-			null
-		],
-		[
-			"C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarysearchtree.cpp",
-			"MU",
-			null
-		],
-		[
-			"C:/Users/krystian.sobczyk/Music/AlgorithmVisualizer/binarytreebase.cpp",
 			"MU",
 			null
 		],
