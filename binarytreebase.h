@@ -3,6 +3,10 @@
 
 #include <memory>
 
+using std::weak_ptr;
+using std::shared_ptr;
+using std::dynamic_pointer_cast;
+
 template<class T>
 class BinaryTreeBase
 {
@@ -17,36 +21,60 @@ public:
         {
         }
 
+        virtual ~node() = default;
+
         T value;
 
-        std::weak_ptr<node> parent;
-        std::shared_ptr<node> left;
-        std::shared_ptr<node> right;
+        weak_ptr<node> parent;
+        shared_ptr<node> left;
+        shared_ptr<node> right;
     };
 
     bool add(const T& value)
     {
-        return addInternal(value, root, nullptr);
+        shared_ptr<node> new_node;
+        root = addInternal(value, root, nullptr, new_node);
+        postAddInternal(new_node);
+        return new_node != nullptr;
     }
 
     bool remove(const T& value)
     {
-        return removeInternal(value, root);
+        bool removed = false;
+        root = removeInternal(value, root, removed);
+        postRemoveInternal();
+        return removed;
     }
 
-    node* getRoot() const { return root.get(); }
+    const node* getRoot() const
+    {
+        return root.get();
+    }
 
 protected:
-    virtual bool addInternal(const T& value, std::shared_ptr<node>& in_root, const std::shared_ptr<node>& in_parent) = 0;
-    virtual bool removeInternal(const T& value, std::shared_ptr<node>& in_root) = 0;
+    virtual shared_ptr<node> addInternal(const T &value, const shared_ptr<node>& inRoot, const shared_ptr<node>& parent, shared_ptr<node>& new_node) = 0;
+    virtual void postAddInternal(const shared_ptr<node>& newNode) {};
+    virtual shared_ptr<node> removeInternal(const T &value, const shared_ptr<node>& valuePtr, bool& removed) = 0;
+    virtual void postRemoveInternal() {};
+    virtual shared_ptr<node> getNodeForValue(const T &value) const { return nullptr; };
 
-    std::shared_ptr<node>& getMaxValuePtr(const std::shared_ptr<node>& in_root) const
+    virtual shared_ptr<node> createNode(const T &value) const
     {
-        return in_root && in_root->right ? getMaxValuePtr(in_root->right) : const_cast<std::shared_ptr<node>&>(in_root);
+        return std::make_shared<node>(value);
     }
 
-private:
-    std::shared_ptr<node> root;
+    shared_ptr<node>& getMaxValuePtr(const shared_ptr<node>& inRoot) const
+    {
+        return inRoot && inRoot->right ? getMaxValuePtr(inRoot->right) : const_cast<shared_ptr<node>&>(inRoot);
+    }
+
+    shared_ptr<node>& getMinValuePtr(const shared_ptr<node>& inRoot) const
+    {
+        return inRoot && inRoot->left ? getMinValuePtr(inRoot->left) : const_cast<shared_ptr<node>&>(inRoot);
+    }
+
+protected:
+    shared_ptr<node> root;
 };
 
 #endif // BINARYTREEBASE_H

@@ -3,40 +3,6 @@
 
 #include "binarysearchtree.h"
 
-namespace BinaryTreeHelpers
-{
-    template<class T>
-    static void rightRotate(std::shared_ptr<T>& in_root)
-    {
-        const auto old_root = in_root;
-        in_root = in_root->left;
-        old_root->left = in_root->right;
-        in_root->right = old_root;
-    }
-
-    template<class T>
-    static void leftRotate(std::shared_ptr<T>& in_root)
-    {
-        const auto old_root = in_root;
-        in_root = in_root->right;
-        old_root->right = in_root->left;
-        in_root->left = old_root;
-    }
-
-    template<class T>
-    static int getHeight(const std::shared_ptr<T>& in_root)
-    {
-        return in_root ? 1 + std::max(getHeight(in_root->left), getHeight(in_root->right)) : -1;
-    }
-
-    template<class T>
-    static int getBalanceFactor(const std::shared_ptr<T>& in_root)
-    {
-        return in_root ? getHeight(in_root->left) - getHeight(in_root->right) : -1;
-    }
-}
-
-
 template<class T>
 class BalancedBinaryTree : public BinarySearchTree<T>
 {
@@ -44,82 +10,64 @@ public:
     BalancedBinaryTree() {}
 
     using Super = BinarySearchTree<T>;
+    using node = typename BinaryTreeBase<T>::node;
 
 protected:
-    virtual bool addInternal(const T& value, std::shared_ptr<typename BinaryTreeBase<T>::node>& in_root, const std::shared_ptr<typename BinaryTreeBase<T>::node>& in_parent) override;
-    virtual bool removeInternal(const T& value, std::shared_ptr<typename BinaryTreeBase<T>::node>& in_root) override;
+    virtual void postAddInternal(const shared_ptr<node>& newNode) override;
+    virtual void postRemoveInternal() override;
+
+    void fixRotations(const shared_ptr<node>& inRoot);
 };
 
 template<class T>
-inline bool BalancedBinaryTree<T>::addInternal(const T &value, std::shared_ptr<typename BinaryTreeBase<T>::node> &in_root, const std::shared_ptr<typename BinaryTreeBase<T>::node> &in_parent)
+inline void BalancedBinaryTree<T>::postAddInternal(const shared_ptr<node> &newNode)
 {
-    if(Super::addInternal(value, in_root, in_parent))
-    {
-        const int balance_factor = BinaryTreeHelpers::getBalanceFactor(in_root);
-        if(balance_factor > 1)
-        {
-            if(value < in_root->left->value)
-            {
-                BinaryTreeHelpers::rightRotate(in_root);
-            }
-            else
-            {
-                BinaryTreeHelpers::leftRotate(in_root->left);
-                BinaryTreeHelpers::rightRotate(in_root);
-            }
-        }
-        else if(balance_factor < -1)
-        {
-            if(value < in_root->right->value)
-            {
-                BinaryTreeHelpers::rightRotate(in_root->right);
-                BinaryTreeHelpers::leftRotate(in_root);
-            }
-            else
-            {
-                BinaryTreeHelpers::leftRotate(in_root);
-            }
-        }
-        return true;
-    }
-
-    return false;
+    fixRotations(this->root);
 }
 
 template<class T>
-inline bool BalancedBinaryTree<T>::removeInternal(const T &value, std::shared_ptr<typename BinaryTreeBase<T>::node> &in_root)
+inline void BalancedBinaryTree<T>::postRemoveInternal()
 {
-    if(Super::removeInternal(value, in_root))
+    fixRotations(this->root);
+}
+
+template<class T>
+inline void BalancedBinaryTree<T>::fixRotations(const shared_ptr<node> &inRoot)
+{
+    if(!inRoot)
     {
-        const int balance_factor = BinaryTreeHelpers::getBalanceFactor(in_root);
-        if(balance_factor == 2)
-        {
-            if(BinaryTreeHelpers::getBalanceFactor(in_root->right) >= 0)
-            {
-                BinaryTreeHelpers::rightRotate(in_root);
-            }
-            else
-            {
-                BinaryTreeHelpers::leftRotate(in_root->left);
-                BinaryTreeHelpers::rightRotate(in_root);
-            }
-        }
-        else if(balance_factor == -2)
-        {
-            if(BinaryTreeHelpers::getBalanceFactor(in_root->left) <= 0)
-            {
-                BinaryTreeHelpers::leftRotate(in_root);
-            }
-            else
-            {
-                BinaryTreeHelpers::rightRotate(in_root->right);
-                BinaryTreeHelpers::leftRotate(in_root);
-            }
-        }
-        return true;
+        return;
     }
 
-    return false;
+    fixRotations(inRoot->left);
+
+    const int balance_factor = this->getBalanceFactor(inRoot);
+    if(balance_factor == 2)
+    {
+        if(this->getBalanceFactor(inRoot->right) >= 0)
+        {
+            this->rotateRight(inRoot);
+        }
+        else
+        {
+            this->rotateLeft(inRoot->left);
+            this->rotateRight(inRoot);
+        }
+    }
+    else if(balance_factor == -2)
+    {
+        if(this->getBalanceFactor(inRoot->left) <= 0)
+        {
+            this->rotateLeft(inRoot);
+        }
+        else
+        {
+            this->rotateRight(inRoot->right);
+            this->rotateLeft(inRoot);
+        }
+    }
+
+    fixRotations(inRoot->right);
 }
 
 

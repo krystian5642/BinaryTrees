@@ -25,6 +25,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         binarytreebase.h binarysearchtree.h
         balancedbinarytree.h
+        redblacktree.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET AlgorithmVisualizer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

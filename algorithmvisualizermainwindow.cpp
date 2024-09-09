@@ -1,13 +1,14 @@
 #include "algorithmvisualizermainwindow.h"
 #include "./ui_algorithmvisualizermainwindow.h"
-#include "balancedbinarytree.h"
+
+#include "redblacktree.h"
 
 #include <QLabel>
 
 AlgorithmVisualizerMainWindow::AlgorithmVisualizerMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::AlgorithmVisualizerMainWindow())
-    , binaryTree(std::make_unique<BalancedBinaryTree<int>>())
+    , binaryTree(std::make_unique<RedBlackTree<int>>())
 {
     ui->setupUi(this);
 }
@@ -47,7 +48,7 @@ void AlgorithmVisualizerMainWindow::redrawBinaryTree()
     drawBinaryTreeNode(binaryTree->getRoot(), QPoint{renderAreaSize.width() / 2, 20});
 }
 
-void AlgorithmVisualizerMainWindow::drawBinaryTreeNode(BinaryTreeBase<int>::node *node, const QPoint& Location)
+void AlgorithmVisualizerMainWindow::drawBinaryTreeNode(const BinaryTreeBase<int>::node *node, const QPoint& Location)
 {
     if(!node)
     {
@@ -63,6 +64,10 @@ void AlgorithmVisualizerMainWindow::drawBinaryTreeNode(BinaryTreeBase<int>::node
     textItem->setFont(font);
     textItem->move(Location);
     textItem->show();
+
+    const auto* as_red_black_node = dynamic_cast<const RedBlackTree<int>::red_black_node*>(node);
+
+    textItem->setStyleSheet(as_red_black_node && as_red_black_node->is_red ? "QLabel { background-color : red; white : red; }" : "QLabel { background-color : white; color : black; }");
     binaryTreeValueLabels.push_back(textItem);
 
     drawBinaryTreeNode(node->right.get(), QPoint(Location.x() + offset * 2, Location.y() + offset));

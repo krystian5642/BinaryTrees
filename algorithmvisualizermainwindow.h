@@ -34,7 +34,7 @@ private:
     QVector<QLabel*> binaryTreeValueLabels;
 
     void redrawBinaryTree();
-    void drawBinaryTreeNode(BinaryTreeBase<int>::node* node, const QPoint& Location);
+    void drawBinaryTreeNode(const BinaryTreeBase<int>::node* node, const QPoint& Location);
 };
 
 #endif //ALGORITHMVISUALIZERMAINWINDOW_H
