@@ -3,201 +3,201 @@
 
 #include "binarytreebase.h"
 
-template<class T>
-class BinarySearchTree : public BinaryTreeBase<T>
+template <class ValueType>
+class BinarySearchTree : public BinaryTreeBase<ValueType>
 {
 public:
-    BinarySearchTree() {}
+    BinarySearchTree() = default;
 
-    using node = typename BinaryTreeBase<T>::node;
+    using Node = typename BinaryTreeBase<ValueType>::Node;
 
 protected:
-    virtual shared_ptr<node> addInternal(const T &value, const shared_ptr<node>& inRoot, const shared_ptr<node>& parent, shared_ptr<node>& new_node) override;
-    virtual shared_ptr<node> removeInternal(const T &value, const shared_ptr<node>& valuePtr, bool& removed) override;
-    virtual shared_ptr<node> getNodeForValue(const T &value) const;
+    virtual shared_ptr<Node> addInternal(const ValueType &value, const shared_ptr<Node> &inRoot, const shared_ptr<Node> &removed, shared_ptr<Node> &newNode) override;
+    virtual shared_ptr<Node> removeInternal(const ValueType &value, const shared_ptr<Node> &valuePtr, bool &removed) override;
+    virtual shared_ptr<Node> getNodeForValue(const ValueType &value) const override;
 
-    shared_ptr<node> getNodeForValueInternal(const T &value, const shared_ptr<node>& inRoot) const;
+    shared_ptr<Node> getNodeForValueInternal(const ValueType &value, const shared_ptr<Node> &inRoot) const;
 
-    void rotateRight(const shared_ptr<node>& inRoot);
-    void rotateLeft(const shared_ptr<node>& inRoot);
+    void rightRotate(const shared_ptr<Node> &inRoot);
+    void leftRotate(const shared_ptr<Node> &inRoot);
 
-    int getHeight(const shared_ptr<node>& inRoot);
-    int getBalanceFactor(const shared_ptr<node>& inRoot);
+    int getHeight(const shared_ptr<Node> &inRoot);
+    int getBalanceFactor(const shared_ptr<Node> &inRoot);
 };
 
-template<class T>
-inline shared_ptr<typename BinaryTreeBase<T>::node> BinarySearchTree<T>::addInternal(const T &value, const shared_ptr<node>& inRoot, const shared_ptr<node>& parent, shared_ptr<node>& new_node)
+template <class ValueType>
+shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinarySearchTree<ValueType>::addInternal(const ValueType &value, const shared_ptr<Node> &inRoot
+                                                                                                            , const shared_ptr<Node> &parent, shared_ptr<Node> &newNode)
 {
-    if(!inRoot)
+    if(inRoot == this->getLeafNode())
     {
-        new_node = this->createNode(value);
-        new_node->parent = parent;
-        return new_node;
+        newNode = this->createNode(value);
+        newNode->parent = parent;
+        return newNode;
     }
 
     if(inRoot->value < value)
     {
-        inRoot->right = BinarySearchTree<T>::addInternal(value, inRoot->right, inRoot, new_node);
+        inRoot->right = addInternal(value, inRoot->right, inRoot, newNode);
     }
-    else if(inRoot->value > value)
+    else if (inRoot->value > value)
     {
-        inRoot->left = BinarySearchTree<T>::addInternal(value, inRoot->left, inRoot, new_node);
+        inRoot->left = addInternal(value, inRoot->left, inRoot, newNode);
     }
     else
     {
-        new_node = nullptr;
+        newNode = nullptr;
     }
 
     return inRoot;
 }
 
-template<class T>
-inline shared_ptr<typename BinaryTreeBase<T>::node> BinarySearchTree<T>::removeInternal(const T &value, const shared_ptr<node>& valuePtr, bool& removed)
+template <class ValueType>
+shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinarySearchTree<ValueType>::removeInternal(const ValueType &value, const shared_ptr<Node> &valuePtr, bool &removed)
 {
-    if(!valuePtr)
+    if (valuePtr == this->getLeafNode())
     {
         removed = false;
     }
-    else if(valuePtr->value < value)
+    else if (valuePtr->value < value)
     {
         valuePtr->right = removeInternal(value, valuePtr->right, removed);
-    } 
-    else if(valuePtr->value > value)
+    }
+    else if (valuePtr->value > value)
     {
         valuePtr->left = removeInternal(value, valuePtr->left, removed);
     }
     else
     {
         removed = true;
+    }
 
-        // Node with only right child or no child
-        if(!valuePtr->left)
-        {
-            return valuePtr->right;
-        }
+    // Node with only right child or no child
+    if (!valuePtr->left)
+    {
+        return valuePtr->right;
+    }
 
-        // Node with only left child
-        if(!valuePtr->right)
-        {
-            return valuePtr->left;
-        }
+    // Node with only left child
+    if (!valuePtr->right)
+    {
+        return valuePtr->left;
+    }
 
-        // Node with 2 children
-        auto& left_max = this->getMaxValuePtr(valuePtr->left);
-        valuePtr->value = left_max->value;
-        left_max.reset();
+    // Node with 2 children
+    const auto leftMax = this->getMaxValuePtr(valuePtr->left);
+    valuePtr->value = leftMax->value;
+    if(leftMax->getParentAsSharedPtr()->left == leftMax)
+    {
+        leftMax->getParentAsSharedPtr()->left = nullptr;
+    }
+    else
+    {
+        leftMax->getParentAsSharedPtr()->right = nullptr;
     }
 
     return valuePtr;
 }
 
-template<class T>
-inline shared_ptr<typename BinaryTreeBase<T>::node> BinarySearchTree<T>::getNodeForValue(const T &value) const
+template <class ValueType>
+inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinarySearchTree<ValueType>::getNodeForValue(const ValueType &value) const
 {
     return getNodeForValueInternal(value, this->root);
 }
 
-template<class T>
-inline shared_ptr<typename BinaryTreeBase<T>::node> BinarySearchTree<T>::getNodeForValueInternal(const T &value, const shared_ptr<node> &inRoot) const
+template <class ValueType>
+inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinarySearchTree<ValueType>::getNodeForValueInternal(const ValueType &value, const shared_ptr<Node> &inRoot) const
 {
-    if(!inRoot)
+    if (inRoot == this->getLeafNode())
     {
         return inRoot;
     }
 
-    if(inRoot->value < value)
+    if (inRoot->value < value)
     {
         return getNodeForValueInternal(value, inRoot->right);
     }
-    else if(inRoot->value > value)
+
+    if (inRoot->value > value)
     {
         return getNodeForValueInternal(value, inRoot->left);
     }
+
     return inRoot;
 }
 
-template<class T>
-inline void BinarySearchTree<T>::rotateRight(const shared_ptr<typename BinaryTreeBase<T>::node> &inRoot)
+template <class ValueType>
+inline void BinarySearchTree<ValueType>::rightRotate(const shared_ptr<Node> &inRoot)
 {
-    const auto new_root = inRoot->left;
-    const auto y = new_root->right;
-    inRoot->left = y;
-    new_root->right = inRoot;
-    if(const auto parent = inRoot->parent.lock())
+    const auto newRoot = inRoot->left;
+    inRoot->left = newRoot->right;
+    newRoot->right = inRoot;
+    if (const auto parent = inRoot->getParentAsSharedPtr())
     {
-        if(parent->left == inRoot)
+        if (parent->left == inRoot)
         {
-            parent->left = new_root;
+            parent->left = newRoot;
         }
         else
         {
-            parent->right = new_root;
+            parent->right = newRoot;
         }
     }
     else
     {
-        this->root = new_root;
+        this->root = newRoot;
     }
 
-    //update parent
-    new_root->parent = inRoot->parent;
-    inRoot->parent = new_root;
-    if(inRoot->left)
+    // update parent
+    newRoot->parent = inRoot->parent;
+    inRoot->parent = newRoot;
+    if(inRoot->left != this->getLeafNode())
     {
         inRoot->left->parent = inRoot;
     }
 }
 
-template<class T>
-inline void BinarySearchTree<T>::rotateLeft(const shared_ptr<typename BinaryTreeBase<T>::node> &inRoot)
+template <class ValueType>
+inline void BinarySearchTree<ValueType>::leftRotate(const shared_ptr<Node> &inRoot)
 {
-    const auto new_root = inRoot->right;
-    const auto y = new_root->left;
-    inRoot->right = y;
-    new_root->left = inRoot;
-    if(const auto parent = inRoot->parent.lock())
+    const auto newRoot = inRoot->right;
+    inRoot->right = newRoot->left;
+    newRoot->left = inRoot; 
+    if (const auto parent = inRoot->getParentAsSharedPtr())
     {
-        if(parent->left == inRoot)
+        if (parent->left == inRoot)
         {
-            parent->left = new_root;
+            parent->left = newRoot;
         }
         else
         {
-            parent->right = new_root;
+            parent->right = newRoot;
         }
     }
     else
     {
-        this->root = new_root;
+        this->root = newRoot;
     }
 
-    //update parent
-    new_root->parent = inRoot->parent;
-    inRoot->parent = new_root;
-    if(inRoot->right)
+    // update parent
+    newRoot->parent = inRoot->parent;
+    inRoot->parent = newRoot;
+    if (inRoot->right != this->getLeafNode())
     {
         inRoot->right->parent = inRoot;
     }
 }
 
-template<class T>
-inline int BinarySearchTree<T>::getHeight(const shared_ptr<node> &inRoot)
+template <class ValueType>
+inline int BinarySearchTree<ValueType>::getHeight(const shared_ptr<Node> &inRoot)
 {
-    return inRoot ? 1 + max(getHeight(inRoot->left), getHeight(inRoot->right)) : -1;
+    return inRoot != this->getLeafNode() ? 1 + max(getHeight(inRoot->left), getHeight(inRoot->right)) : -1;
 }
 
-template<class T>
-inline int BinarySearchTree<T>::getBalanceFactor(const shared_ptr<node> &inRoot)
+template <class ValueType>
+inline int BinarySearchTree<ValueType>::getBalanceFactor(const shared_ptr<Node> &inRoot)
 {
-    return inRoot ? getHeight(inRoot->left) - getHeight(inRoot->right) : -1;
+    return inRoot != this->getLeafNode() ? getHeight(inRoot->left) - getHeight(inRoot->right) : -1;
 }
 
 #endif // BINARYSEARCHTREE_H
-
-
-
-
-
-
-
-

@@ -8,7 +8,6 @@
 #include <QMainWindow>
 #include <memory>
 
-
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -29,12 +28,12 @@ private slots:
     void on_removeValueButton_clicked();
 
 private:
-    Ui::AlgorithmVisualizerMainWindow* ui;
+    Ui::AlgorithmVisualizerMainWindow *ui;
     std::unique_ptr<BinaryTreeBase<int>> binaryTree;
-    QVector<QLabel*> binaryTreeValueLabels;
+    QVector<QLabel *> binaryTreeValueLabels;
 
     void redrawBinaryTree();
-    void drawBinaryTreeNode(const BinaryTreeBase<int>::node* node, const QPoint& Location);
+    void drawBinaryTreeNode(const shared_ptr<const BinaryTreeBase<int>::Node> node, const QPoint &location);
 };
 
-#endif //ALGORITHMVISUALIZERMAINWINDOW_H
+#endif // ALGORITHMVISUALIZERMAINWINDOW_H

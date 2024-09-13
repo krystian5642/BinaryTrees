@@ -3,72 +3,70 @@
 
 #include "binarysearchtree.h"
 
-template<class T>
-class BalancedBinaryTree : public BinarySearchTree<T>
+template <class ValueType>
+class BalancedBinaryTree : public BinarySearchTree<ValueType>
 {
 public:
-    BalancedBinaryTree() {}
+    BalancedBinaryTree() = default;
 
-    using Super = BinarySearchTree<T>;
-    using node = typename BinaryTreeBase<T>::node;
+    using Node = typename BinaryTreeBase<ValueType>::Node;
 
 protected:
-    virtual void postAddInternal(const shared_ptr<node>& newNode) override;
+    virtual void postAddInternal(const shared_ptr<Node> &newNode) override;
     virtual void postRemoveInternal() override;
 
-    void fixRotations(const shared_ptr<node>& inRoot);
+    void fixRotations(const shared_ptr<Node> &inRoot);
 };
 
-template<class T>
-inline void BalancedBinaryTree<T>::postAddInternal(const shared_ptr<node> &newNode)
+template <class ValueType>
+inline void BalancedBinaryTree<ValueType>::postAddInternal(const shared_ptr<Node> &newNode)
 {
     fixRotations(this->root);
 }
 
-template<class T>
-inline void BalancedBinaryTree<T>::postRemoveInternal()
+template <class ValueType>
+inline void BalancedBinaryTree<ValueType>::postRemoveInternal()
 {
     fixRotations(this->root);
 }
 
-template<class T>
-inline void BalancedBinaryTree<T>::fixRotations(const shared_ptr<node> &inRoot)
+template <class ValueType>
+inline void BalancedBinaryTree<ValueType>::fixRotations(const shared_ptr<Node> &inRoot)
 {
-    if(!inRoot)
+    if (inRoot.get() == this->getLeafNode())
     {
         return;
     }
 
     fixRotations(inRoot->left);
 
-    const int balance_factor = this->getBalanceFactor(inRoot);
-    if(balance_factor == 2)
+    const int balanceFactor = this->getBalanceFactor(inRoot);
+    if (balanceFactor == 2)
     {
-        if(this->getBalanceFactor(inRoot->right) >= 0)
+        if (this->getBalanceFactor(inRoot->right) >= 0)
         {
-            this->rotateRight(inRoot);
+            this->rightRotate(inRoot);
         }
         else
         {
-            this->rotateLeft(inRoot->left);
-            this->rotateRight(inRoot);
+            this->leftRotate(inRoot->left);
+            this->rightRotate(inRoot);
         }
     }
-    else if(balance_factor == -2)
+    else if (balanceFactor == -2)
     {
-        if(this->getBalanceFactor(inRoot->left) <= 0)
+        if (this->getBalanceFactor(inRoot->left) <= 0)
         {
-            this->rotateLeft(inRoot);
+            this->leftRotate(inRoot);
         }
         else
         {
-            this->rotateRight(inRoot->right);
-            this->rotateLeft(inRoot);
+            this->rightRotate(inRoot->right);
+            this->leftRotate(inRoot);
         }
     }
 
     fixRotations(inRoot->right);
 }
-
 
 #endif // BALANCEDBINARYTREE_H
