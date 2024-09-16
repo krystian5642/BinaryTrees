@@ -9,48 +9,121 @@ class RedBlackTree : public BinarySearchTree<ValueType>
 public:
     RedBlackTree();
 
-    using Node = typename BinaryTreeBase<ValueType>::Node;
+    using BinaryTreeNode = typename BinaryTreeBase<ValueType>::BinaryTreeNode;
+    using BinarySearchTreeNode = typename BinarySearchTree<ValueType>::BinarySearchTreeNode;
 
-    virtual shared_ptr<Node> getLeafNode() const { return nillNode; }
+    virtual shared_ptr<BinaryTreeNode> getLeafNode() const override { return nillNode; }
 protected:
-    virtual void postAddInternal(const shared_ptr<Node> &newNode) override;
-    virtual shared_ptr<Node> removeInternal(const ValueType &value, const shared_ptr<Node> &valuePtr, bool &removed) override;
-    virtual shared_ptr<Node> createNode(const ValueType &value) const override;
+    virtual shared_ptr<BinaryTreeNode> removeInternal(const ValueType &value, const shared_ptr<BinaryTreeNode> &inRoot, bool &removed) override;
+    virtual shared_ptr<BinaryTreeNode> createNode(const ValueType &value) const override;
 
-    void transplant(const shared_ptr<Node> &u, const shared_ptr<Node> &v);
-    void balanceDelete(shared_ptr<Node> x);
+    virtual void postAddInternal(const shared_ptr<BinaryTreeNode> &newNode) override;
+
+    void fixAdd(shared_ptr<BinarySearchTreeNode> node);
+    void fixDelete(shared_ptr<BinarySearchTreeNode> node);
 
 protected:
-    shared_ptr<Node> nillNode;
+    shared_ptr<BinarySearchTreeNode> nillNode;
 };
 
 template <class ValueType>
 inline RedBlackTree<ValueType>::RedBlackTree()
 {
-    nillNode = this->createNode(0);
+    nillNode = this->template getNodeAs<BinarySearchTreeNode>(this->createNode(0));
     nillNode->color = QColorConstants::Black;
     this->root = nillNode;
 }
 
 template <class ValueType>
-inline void RedBlackTree<ValueType>::postAddInternal(const shared_ptr<Node> &newNode)
+shared_ptr<typename RedBlackTree<ValueType>::BinaryTreeNode> RedBlackTree<ValueType>::removeInternal(const ValueType &value, const shared_ptr<BinaryTreeNode> &inRoot, bool &removed)
 {
-    if (newNode == this->getLeafNode())
+    const auto nodePtr = this->template getNodeAs<BinarySearchTreeNode>(this->getNodeForValue(value));
+    if (nodePtr != this->getLeafNode())
+    {
+        removed = true;
+
+        shared_ptr<BinarySearchTreeNode> y = nodePtr;
+        shared_ptr<BinarySearchTreeNode> x = nullptr;
+
+        QColor color = nodePtr->color;
+        if(nodePtr->left == nillNode)
+        {
+            x = nodePtr->right;
+            this->transplant(nodePtr, x);
+        }
+        else if(nodePtr->right == nillNode)
+        {
+            x = nodePtr->left;
+            this->transplant(nodePtr, x);
+        }
+        else
+        {
+            y = this->template getNodeAs<BinarySearchTreeNode>(this->getMinValuePtr(nodePtr->right));
+            x = y->right;
+            color = y->color;
+            if(y->getParent() == nodePtr)
+            {
+                x->parent = y;
+            }
+            else
+            {
+                this->transplant(y, x);
+                y->right = nodePtr->right;
+                y->right->parent = y;
+            }
+
+            this->transplant(nodePtr, y);
+            y->left = nodePtr->left;
+            y->left->parent = y;
+            y->color = nodePtr->color;
+        }
+
+        if(color == QColorConstants::Black)
+        {
+            this->fixDelete(x);
+        }
+
+        return this->root;
+    }
+
+    removed = false;
+    return this->root;
+}
+
+template <class ValueType>
+inline shared_ptr<typename RedBlackTree<ValueType>::BinaryTreeNode> RedBlackTree<ValueType>::createNode(const ValueType &value) const
+{
+    const auto newNode = std::make_shared<BinarySearchTreeNode>(value);
+    newNode->left = nillNode;
+    newNode->right = nillNode;
+    newNode->color = QColorConstants::Red;
+    return newNode;
+}
+
+template <class ValueType>
+inline void RedBlackTree<ValueType>::postAddInternal(const shared_ptr<BinaryTreeNode> &newNode)
+{
+    this->fixAdd(this->template getNodeAs<BinarySearchTreeNode>(newNode));
+}
+
+template<class ValueType>
+inline void RedBlackTree<ValueType>::fixAdd(shared_ptr<BinarySearchTreeNode> node)
+{
+    if (node == this->getLeafNode())
     {
         return;
     }
 
-    shared_ptr<Node> node = newNode;
     if (node == this->root)
     {
         node->color = QColorConstants::Black;
         return;
     }
 
-    shared_ptr<Node> parent = node->getParentAsSharedPtr();
+    auto parent = this->template getNodeAs<BinarySearchTreeNode>(node->getParent());
     while(node != this->root && parent->color == QColorConstants::Red)
     {
-        const shared_ptr<Node> grandparent = parent->getParentAsSharedPtr();
+        const auto grandparent = this->template getNodeAs<BinarySearchTreeNode>(parent->getParent());
         if(parent == grandparent->left)
         {
             const auto uncle = grandparent->right;
@@ -68,7 +141,7 @@ inline void RedBlackTree<ValueType>::postAddInternal(const shared_ptr<Node> &new
                     node->color = QColorConstants::Red;
                 }
 
-                if(grandparent!=this->root)
+                if(grandparent != this->root)
                 {
                     grandparent->color = QColorConstants::Red;
                 }
@@ -100,7 +173,7 @@ inline void RedBlackTree<ValueType>::postAddInternal(const shared_ptr<Node> &new
         }
         else if(parent == grandparent->right)
         {
-            const shared_ptr<Node> uncle = grandparent->left;
+            const auto uncle = grandparent->left;
             if(uncle && uncle->color == QColorConstants::Red)
             {
                 if(parent->left == node)
@@ -145,119 +218,32 @@ inline void RedBlackTree<ValueType>::postAddInternal(const shared_ptr<Node> &new
             }
         }
 
-        parent = node->getParentAsSharedPtr();
+        parent = this->template getNodeAs<BinarySearchTreeNode>(node->getParent());
     }
 }
 
-template <class ValueType>
-inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> RedBlackTree<ValueType>::removeInternal(const ValueType &value, const shared_ptr<Node> &valuePtr, bool &removed)
+template<class ValueType>
+inline void RedBlackTree<ValueType>::fixDelete(shared_ptr<BinarySearchTreeNode> node)
 {
-    const auto z = this->getNodeForValue(value);
-    if (z != this->getLeafNode())
-    {
-        removed = true;
-
-        shared_ptr<Node> y = z;
-        shared_ptr<Node> x = nullptr;
-
-        QColor color = z->color;
-        if(z->left == nillNode)
-        {
-            x = z->right;
-            transplant(z,x);
-        }
-        else if(z->right == nillNode)
-        {
-            x = z->left;
-            transplant(z,x);
-        }
-        else
-        {
-            y = this->getMinValuePtr(z->right);
-            x = y->right;
-            color = y->color;
-            if(y->getParentAsSharedPtr() == z)
-            {
-                x->parent = y;
-            }
-            else
-            {
-                transplant(y, x);
-                y->right = z->right;
-                y->right->parent = y;
-            }
-
-            transplant(z, y);
-            y->left = z->left;
-            y->left->parent = y;
-            y->color = z->color;
-        }
-
-        if(color == QColorConstants::Black)
-        {
-            balanceDelete(x);
-        }
-
-        return this->root;
-    }
-
-    removed = false;
-    return this->root;
-}
-
-template <class ValueType>
-inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> RedBlackTree<ValueType>::createNode(const ValueType &value) const
-{
-    const auto newNode = std::make_shared<Node>(value);
-    newNode->left = nillNode;
-    newNode->right = nillNode;
-    newNode->color = QColorConstants::Red;
-    return newNode;
-}
-
-template <class ValueType>
-inline void RedBlackTree<ValueType>::transplant(const shared_ptr<Node> &u, const shared_ptr<Node> &v)
-{
-    if (u == this->root)
-    {
-        this->root = v;
-    }
-    else if (u->getParentAsSharedPtr()->left == u)
-    {
-        u->getParentAsSharedPtr()->left = v;
-    }
-    else
-    {
-        u->getParentAsSharedPtr()->right = v;
-    }
-
-    if (v)
-    {
-        v->parent = u->parent;
-    }
-}
-
-template <class ValueType>
-inline void RedBlackTree<ValueType>::balanceDelete(shared_ptr<Node> node)
-{
-    shared_ptr<Node> sibling = nullptr;
+    shared_ptr<BinarySearchTreeNode> sibling = nullptr;
+    auto parent = this->template getNodeAs<BinarySearchTreeNode>(node->getParent());
     while (node != this->root && node->color == QColorConstants::Black)
     {
-        if (node == node->getParentAsSharedPtr()->left)
+        if (node == parent->left)
         {
-            sibling = node->getParentAsSharedPtr()->right;
+            sibling = parent->right;
             if (sibling->color == QColorConstants::Red)
             {
                 sibling->color = QColorConstants::Black;
-                node->getParentAsSharedPtr()->color = QColorConstants::Red;
-                this->leftRotate(node->getParentAsSharedPtr());
-                sibling = node->getParentAsSharedPtr()->right;
+                parent->color = QColorConstants::Red;
+                this->leftRotate(parent);
+                sibling = parent->right;
             }
 
             if (sibling->left->color == QColorConstants::Black && sibling->right->color == QColorConstants::Black)
             {
                 sibling->color = QColorConstants::Red;
-                node = node->getParentAsSharedPtr();
+                node = parent;
             }
             else
             {
@@ -266,31 +252,31 @@ inline void RedBlackTree<ValueType>::balanceDelete(shared_ptr<Node> node)
                     sibling->color = QColorConstants::Red;
                     sibling->left->color = QColorConstants::Black;
                     this->rightRotate(sibling);
-                    sibling = node->getParentAsSharedPtr()->right;
+                    sibling = parent->right;
                 }
 
-                sibling->color = node->getParentAsSharedPtr()->color;
-                node->getParentAsSharedPtr()->color = QColorConstants::Black;
+                sibling->color = parent->color;
+                parent->color = QColorConstants::Black;
                 sibling->right->color = QColorConstants::Black;
-                this->leftRotate(node->getParentAsSharedPtr());
-                node = this->root;
+                this->leftRotate(parent);
+                node = this->template getNodeAs<BinarySearchTreeNode>(this->root);
             }
         }
         else
         {
-            sibling = node->getParentAsSharedPtr()->left;
+            sibling = parent->left;
             if (sibling->color == QColorConstants::Red)
             {
                 sibling->color = QColorConstants::Black;
-                node->getParentAsSharedPtr()->color = QColorConstants::Red;
-                this->rightRotate(node->getParentAsSharedPtr());
-                sibling = node->getParentAsSharedPtr()->left;
+                parent->color = QColorConstants::Red;
+                this->rightRotate(parent);
+                sibling = parent->left;
             }
 
             if (sibling->left->color == QColorConstants::Black && sibling->right->color == QColorConstants::Black)
             {
                 sibling->color = QColorConstants::Red;
-                node = node->getParentAsSharedPtr();
+                node = parent;
             }
             else
             {
@@ -299,16 +285,18 @@ inline void RedBlackTree<ValueType>::balanceDelete(shared_ptr<Node> node)
                     sibling->color = QColorConstants::Red;
                     sibling->right->color = QColorConstants::Black;
                     this->leftRotate(sibling);
-                    sibling = node->getParentAsSharedPtr()->left;
+                    sibling = parent->left;
                 }
 
-                sibling->color = node->getParentAsSharedPtr()->color;
-                node->getParentAsSharedPtr()->color = QColorConstants::Black;
+                sibling->color = parent->color;
+                parent->color = QColorConstants::Black;
                 sibling->left->color = QColorConstants::Black;
-                this->rightRotate(node->getParentAsSharedPtr());
-                node = this->root;
+                this->rightRotate(parent);
+                node = this->template getNodeAs<BinarySearchTreeNode>(this->root);
             }
         }
+
+        auto parent = this->template getNodeAs<BinarySearchTreeNode>(node->getParent());
     }
     node->color = QColorConstants::Black;
 }

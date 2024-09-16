@@ -14,48 +14,53 @@ public:
     BinaryTreeBase() = default;
     virtual ~BinaryTreeBase() = default;
 
-    struct Node
+    struct BinaryTreeNode
     {
-        Node(const ValueType &value)
+        BinaryTreeNode(const ValueType &value)
             : value(value)
         {}
 
-        shared_ptr<Node> getParentAsSharedPtr() const { return parent.lock(); }
+        virtual ~BinaryTreeNode() = default;
+
+        virtual shared_ptr<BinaryTreeNode> getParent() const = 0;
+        virtual shared_ptr<BinaryTreeNode> getLeft() const = 0;
+        virtual shared_ptr<BinaryTreeNode> getRight() const = 0;
+
+        const ValueType& getValue() const { return value; }
+        const QColor& getColor() const { return color; }
 
         ValueType value;
-
-        weak_ptr<Node> parent;
-        shared_ptr<Node> left;
-        shared_ptr<Node> right;
-
-        QColor color = QColorConstants::Red;
+        QColor color = QColorConstants::Black;
     };
 
     bool add(const ValueType &value);
     bool remove(const ValueType &value);
 
-    const shared_ptr<Node>& getRoot() const { return root; }
-    virtual shared_ptr<Node> getLeafNode() const { return nullptr; }
+    const shared_ptr<BinaryTreeNode>& getRoot() const { return root; }
+    virtual shared_ptr<BinaryTreeNode> getLeafNode() const { return nullptr; }
 
-protected:
-    virtual shared_ptr<Node> addInternal(const ValueType &value, const shared_ptr<Node> &inRoot, const shared_ptr<Node> &parent, shared_ptr<Node> &newNode) = 0;
-    virtual void postAddInternal(const shared_ptr<Node> &newNode) {};
-    virtual shared_ptr<Node> removeInternal(const ValueType &value, const shared_ptr<Node> &valuePtr, bool &removed) = 0;
+protected:   
+    virtual shared_ptr<BinaryTreeNode> addInternal(const ValueType &value, const shared_ptr<BinaryTreeNode> &inRoot, const shared_ptr<BinaryTreeNode> &parent, shared_ptr<BinaryTreeNode> &newNode) = 0;
+    virtual shared_ptr<BinaryTreeNode> removeInternal(const ValueType &value, const shared_ptr<BinaryTreeNode> &inRoot, bool &removed) = 0;
+    virtual shared_ptr<BinaryTreeNode> createNode(const ValueType &value) const = 0;
+    virtual shared_ptr<BinaryTreeNode> getMaxValuePtr(const shared_ptr<BinaryTreeNode> &inRoot) const = 0;
+    virtual shared_ptr<BinaryTreeNode> getMinValuePtr(const shared_ptr<BinaryTreeNode> &inRoot) const = 0;
+
+    virtual void postAddInternal(const shared_ptr<BinaryTreeNode> &newNode) {};
     virtual void postRemoveInternal() {};
-    virtual shared_ptr<Node> getNodeForValue(const ValueType &value) const { return nullptr; }
-    virtual shared_ptr<Node> createNode(const ValueType &value) const;
+    virtual shared_ptr<BinaryTreeNode> getNodeForValue(const ValueType &value) const { return nullptr; }
 
-    shared_ptr<Node> getMaxValuePtr(const shared_ptr<Node> &inRoot) const;
-    shared_ptr<Node> getMinValuePtr(const shared_ptr<Node> &inRoot) const;
+    template <class NodeClass>
+    shared_ptr<NodeClass> getNodeAs(const shared_ptr<BinaryTreeNode> &inRoot) const;
 
 protected:
-  shared_ptr<Node> root;
+   shared_ptr<BinaryTreeNode> root;
 };
 
 template<class ValueType>
 inline bool BinaryTreeBase<ValueType>::add(const ValueType &value)
 {
-    shared_ptr<Node> newNode;
+    shared_ptr<BinaryTreeNode> newNode;
     root = addInternal(value, root, nullptr, newNode);
     postAddInternal(newNode);
     return newNode != nullptr;
@@ -70,22 +75,10 @@ inline bool BinaryTreeBase<ValueType>::remove(const ValueType &value)
     return removed;
 }
 
-template<class ValueType>
-inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinaryTreeBase<ValueType>::createNode(const ValueType &value) const
+template<class ValueType> template<class NodeClass>
+inline shared_ptr<NodeClass> BinaryTreeBase<ValueType>::getNodeAs(const shared_ptr<BinaryTreeNode> &inRoot) const
 {
-    return std::make_shared<Node>(value);
-}
-
-template<class ValueType>
-inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinaryTreeBase<ValueType>::getMaxValuePtr(const shared_ptr<Node> &inRoot) const
-{
-    return inRoot != getLeafNode() && inRoot->right != getLeafNode() ? getMaxValuePtr(inRoot->right) : inRoot;
-}
-
-template<class ValueType>
-inline shared_ptr<typename BinaryTreeBase<ValueType>::Node> BinaryTreeBase<ValueType>::getMinValuePtr(const shared_ptr<Node> &inRoot) const
-{
-    return inRoot != getLeafNode() && inRoot->left != getLeafNode() ? getMinValuePtr(inRoot->left) : inRoot;
+    return std::dynamic_pointer_cast<NodeClass>(inRoot);
 }
 
 #endif // BINARYTREEBASE_H
