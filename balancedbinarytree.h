@@ -34,7 +34,7 @@ inline void BalancedBinaryTree<ValueType>::postRemoveInternal()
 template <class ValueType>
 inline void BalancedBinaryTree<ValueType>::fixRotations(const shared_ptr<BinaryTreeNode> &inRoot)
 {
-    if (inRoot == this->getLeafNode())
+    if (!this->isNodeValid(inRoot))
     {
         return;
     }
@@ -45,7 +45,7 @@ inline void BalancedBinaryTree<ValueType>::fixRotations(const shared_ptr<BinaryT
     const int balanceFactor = this->getBalanceFactor(binarySearchTreeNode);
     if (balanceFactor == 2)
     {
-        if (this->getBalanceFactor(binarySearchTreeNode->right) >= 0)
+        if (this->getBalanceFactor(binarySearchTreeNode->right) >= -1)
         {
             this->rightRotate(binarySearchTreeNode);
         }

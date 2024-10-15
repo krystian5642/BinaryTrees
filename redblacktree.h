@@ -9,10 +9,12 @@ class RedBlackTree : public BinarySearchTree<ValueType>
 public:
     RedBlackTree();
 
+    using Super = BinarySearchTree<ValueType>;
     using BinaryTreeNode = typename BinaryTreeBase<ValueType>::BinaryTreeNode;
     using BinarySearchTreeNode = typename BinarySearchTree<ValueType>::BinarySearchTreeNode;
 
-    virtual shared_ptr<BinaryTreeNode> getLeafNode() const override { return nillNode; }
+    virtual bool isNodeValid(const shared_ptr<BinaryTreeNode> &node) const override;
+
 protected:
     virtual shared_ptr<BinaryTreeNode> removeInternal(const ValueType &value, const shared_ptr<BinaryTreeNode> &inRoot, bool &removed) override;
     virtual shared_ptr<BinaryTreeNode> createNode(const ValueType &value) const override;
@@ -34,11 +36,17 @@ inline RedBlackTree<ValueType>::RedBlackTree()
     this->root = nillNode;
 }
 
+template<class ValueType>
+inline bool RedBlackTree<ValueType>::isNodeValid(const shared_ptr<BinaryTreeNode> &node) const
+{
+    return Super::isNodeValid(node) && node != nillNode;
+}
+
 template <class ValueType>
 shared_ptr<typename RedBlackTree<ValueType>::BinaryTreeNode> RedBlackTree<ValueType>::removeInternal(const ValueType &value, const shared_ptr<BinaryTreeNode> &inRoot, bool &removed)
 {
     const auto nodePtr = this->template getNodeAs<BinarySearchTreeNode>(this->getNodeForValue(value));
-    if (nodePtr != this->getLeafNode())
+    if (this->isNodeValid(nodePtr))
     {
         removed = true;
 
@@ -109,7 +117,7 @@ inline void RedBlackTree<ValueType>::postAddInternal(const shared_ptr<BinaryTree
 template<class ValueType>
 inline void RedBlackTree<ValueType>::fixAdd(shared_ptr<BinarySearchTreeNode> node)
 {
-    if (node == this->getLeafNode())
+    if (!this->isNodeValid(node))
     {
         return;
     }
